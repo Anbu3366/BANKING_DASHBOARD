@@ -1,17 +1,10 @@
-package com.bank.service;
+package com.examly.springapp.service;
 
+import com.examly.springapp.model.Account;
 import java.util.List;
 
-import com.bank.dto.CreateAccountRequest;
-import com.bank.dto.DepositWithdrawRequest;
-import com.bank.dto.TransferRequest;
-import com.bank.model.Account;
-import com.bank.model.Transaction;
-
 public interface AccountService {
-    Account createAccount(CreateAccountRequest request);
-    Account deposit(DepositWithdrawRequest request);
-    Account withdraw(DepositWithdrawRequest request);
-    Account transfer(TransferRequest request);
-    List<Transaction> getTransactionHistory(Long accountId);
+    Account createAccount(Account account);
+    Account getAccountById(Long accountId);
+    List<Account> getAllAccounts();
 }

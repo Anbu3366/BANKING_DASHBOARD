@@ -1,87 +1,57 @@
-package com.bank.service;
-
+package com.examly.springapp.service;
+import com.examly.springapp.model.Account;
+import com.examly.springapp.repository.AccountRepository;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.bank.dto.CreateAccountRequest;
-import com.bank.dto.DepositWithdrawRequest;
-import com.bank.dto.TransferRequest;
-import com.bank.model.Account;
-import com.bank.model.Transaction;
-import com.bank.repository.AccountRepository;
-import com.bank.repository.TransactionRepository;
-
 import java.util.List;
-
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 @Service
 public class AccountServiceImpl implements AccountService {
-
+    private final AccountRepository accountRepository;
+    private final Validator validator;
     @Autowired
-    public AccountRepository accountRepo;
-
-    @Autowired
-    private TransactionRepository transactionRepo;
-
-    @Override
-    public Account createAccount(CreateAccountRequest request) {
-        Account account = new Account();
-        account.setAccountHolderName(request.getAccountHolderName());
-        account.setBalance(request.getBalance());
-        accountRepo.save(account);
-
-        transactionRepo.save(new Transaction(null, account.getAccountId(), request.getBalance(),
-                "ACCOUNT_OPENING", "Initial deposit", null, null));
-
-        return account;
+    public AccountServiceImpl(AccountRepository accountRepository, Validator validator) {
+        this.accountRepository = accountRepository;
+        this.validator = validator;
     }
-
     @Override
-    public Account deposit(DepositWithdrawRequest request) {
-        Account acc = accountRepo.findById(request.getAccountId()).orElseThrow();
-        acc.setBalance(acc.getBalance() + request.getAmount());
-        accountRepo.save(acc);
-        transactionRepo.save(new Transaction(null, acc.getAccountId(), request.getAmount(),
-                "DEPOSIT", request.getDescription(), null, null));
-        return acc;
-    }
-
-    @Override
-    public Account withdraw(DepositWithdrawRequest request) {
-        Account acc = accountRepo.findById(request.getAccountId()).orElseThrow();
-        if (acc.getBalance() < request.getAmount())
-            throw new IllegalArgumentException("Insufficient balance");
-        acc.setBalance(acc.getBalance() - request.getAmount());
-        accountRepo.save(acc);
-        transactionRepo.save(new Transaction(null, acc.getAccountId(), request.getAmount(),
-                "WITHDRAW", request.getDescription(), null, null));
-        return acc;
-    }
-
-    @Override
-    public Account transfer(TransferRequest request) {
-        if (request.getSenderId().equals(request.getReceiverId()))
-            throw new IllegalArgumentException("Sender and receiver cannot be same");
-
-        Account sender = accountRepo.findById(request.getSenderId()).orElseThrow();
-        Account receiver = accountRepo.findById(request.getReceiverId()).orElseThrow();
-
-        if (sender.getBalance() < request.getAmount())
-            throw new IllegalArgumentException("Insufficient balance");
-
-        sender.setBalance(sender.getBalance() - request.getAmount());
-        receiver.setBalance(receiver.getBalance() + request.getAmount());
-
-        accountRepo.save(sender);
-        accountRepo.save(receiver);
-
-        transactionRepo.save(new Transaction(null, sender.getAccountId(), request.getAmount(),
-                "TRANSFER", request.getDescription(), null, receiver.getAccountId()));
-
-        return sender;
-    }
-
-    @Override
-    public List<Transaction> getTransactionHistory(Long accountId) {
-        return transactionRepo.findByAccountId(accountId);
-    }
-}
+    public Account createAccount(Account account) {
+        Set<ConstraintViolation<Account>> violations = validator.validate(account);
+        if (!violations.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (ConstraintViolation<Account> violation : violations) {
+                sb.append(violation.getMessage()).append("; ");
+            }
+            throw new IllegalArgumentException(sb.toString());
+        }
+        Optional<Account> existingAccount = accountRepository.findByAccountNumber(account.getAccountNumber());
+        if (existingAccount.isPresent()) {
+ throw new IllegalArgumentException("Account number already exists");
+ }
+ if (account.getAccountNumber() == null || !account.getAccountNumber().matches("\\d{10}")) {
+ throw new IllegalArgumentException("Account number must be exactly 10 digits");
+ }
+ if (account.getAccountHolderName() == null || account.getAccountHolderName().trim().isEmpty()) {
+ throw new IllegalArgumentException("Account holder name cannot be empty");
+ }
+ if (account.getBalance() == null || account.getBalance() < 500.0) {
+ throw new IllegalArgumentException("Minimum balance of 500.00 must be maintained");
+ }
+ if (account.getAccountType() == null || (!account.getAccountType().equals("Savings") && !account.getAccountType().equals("Checking"))) {
+ throw new IllegalArgumentException("Account type must be Savings or Checking");
+ }
+ return accountRepository.save(account);
+ }
+ @Override
+ public Account getAccountById(Long accountId) {
+ return accountRepository.findById(accountId)
+ .orElseThrow(() -> new NoSuchElementException("Account not found"));
+ }
+ @Override
+ public List<Account> getAllAccounts() {
+ return accountRepository.findAll();
+ }}
