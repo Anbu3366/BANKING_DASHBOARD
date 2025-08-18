@@ -9,6 +9,28 @@ const api = axios.create({
   },
 })
 
+// api.interceptors.request.use(
+//   (config) => {
+//     console.log("[v0] API Request:", config.method?.toUpperCase(), config.url)
+//     return config
+//   },
+//   (error) => {
+//     console.log("[v0] API Request Error:", error)
+//     return Promise.reject(error)
+//   },
+// )
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Enhanced error handling for better user experience
+    if (error.code === "ERR_NETWORK") {
+      error.message = "Unable to connect to server. Please check if the backend is running."
+    }
+    return Promise.reject(error)
+  },
+)
+
 // Account API functions
 export const fetchAccounts = async () => {
   const response = await api.get("/accounts")

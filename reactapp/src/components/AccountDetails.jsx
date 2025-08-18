@@ -20,15 +20,38 @@ const AccountDetails = () => {
   const loadAccountData = async () => {
     try {
       setLoading(true)
+      console.log("[v0] Loading account data for ID:", accountId)
+      console.log("[v0] API Base URL:", "http://localhost:8080/api")
+
       const [accountData, transactionData] = await Promise.all([
         fetchAccount(accountId),
         fetchTransactionHistory(accountId),
       ])
+
+      console.log("[v0] Account data received:", accountData)
+      console.log("[v0] Transaction data received:", transactionData)
+
       setAccount(accountData)
       setTransactions(transactionData)
       setError("")
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to load account details")
+      console.log("[v0] API Error:", err)
+      console.log("[v0] Error response:", err.response)
+      console.log("[v0] Error message:", err.message)
+
+      let errorMessage = "Failed to load account details"
+
+      if (err.code === "ECONNREFUSED" || err.message.includes("Network Error")) {
+        errorMessage = "Cannot connect to server. Make sure your Spring Boot backend is running on port 8080."
+      } else if (err.response?.status === 404) {
+        errorMessage = "Account not found"
+      } else if (err.response?.status === 500) {
+        errorMessage = "Server error. Check your backend logs."
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message
+      }
+
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

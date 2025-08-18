@@ -15,7 +15,10 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/accounts")
-public class AccountController {
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"}, 
+             allowedHeaders = "*", 
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
+public class AccountController{
     
     @Autowired
     private AccountService accountService;

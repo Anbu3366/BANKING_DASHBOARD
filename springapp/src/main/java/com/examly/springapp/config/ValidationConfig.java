@@ -1,5 +1,6 @@
 package com.examly.springapp.config;
 
+
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;

@@ -5,6 +5,7 @@ com\examly\springapp\repository\TransactionRepository.class
 com\examly\springapp\service\TransactionService.class
 com\examly\springapp\repository\AccountRepository.class
 com\examly\springapp\model\Account.class
+main\java\com\examly\springapp\config\CorsConfig.class
 com\examly\springapp\dto\TransferRequest.class
 com\examly\springapp\dto\CreateAccountRequest.class
 com\examly\springapp\service\AccountService.class
