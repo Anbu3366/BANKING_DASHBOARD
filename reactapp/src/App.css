@@ -1,0 +1,44 @@
+/* Banking Application Styles */
+.banking-card {
+  @apply bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow;
+}
+
+.banking-button-primary {
+  @apply bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium hover:bg-primary/90 transition-colors;
+}
+
+.banking-button-secondary {
+  @apply bg-secondary text-secondary-foreground px-4 py-2 rounded-md font-medium hover:bg-secondary/90 transition-colors;
+}
+
+.banking-input {
+  @apply w-full px-3 py-2 border border-border rounded-md bg-input focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+}
+
+.banking-select {
+  @apply w-full px-3 py-2 border border-border rounded-md bg-input focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+}
+
+.banking-table {
+  @apply w-full border-collapse border border-border rounded-lg overflow-hidden;
+}
+
+.banking-table th {
+  @apply bg-muted px-4 py-3 text-left font-semibold text-muted-foreground border-b border-border;
+}
+
+.banking-table td {
+  @apply px-4 py-3 border-b border-border;
+}
+
+.error-message {
+  @apply text-destructive text-sm mt-1;
+}
+
+.success-message {
+  @apply text-green-600 text-sm mt-1;
+}
+
+.loading-spinner {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary;
+}
