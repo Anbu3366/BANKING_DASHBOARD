@@ -18,11 +18,13 @@ public class AccountServiceImpl implements AccountService {
     
     private final AccountRepository accountRepository;
     private final Validator validator;
+    private final AuditService auditService;
     
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository, Validator validator) {
+    public AccountServiceImpl(AccountRepository accountRepository, Validator validator, AuditService auditService) {
         this.accountRepository = accountRepository;
         this.validator = validator;
+        this.auditService = auditService;
     }
     
     @Override
@@ -59,7 +61,9 @@ public class AccountServiceImpl implements AccountService {
             account.setCreatedDate(LocalDateTime.now());
         }
         
-        return accountRepository.save(account);
+        Account saved = accountRepository.save(account);
+        auditService.log("CREATE_ACCOUNT", saved.getAccountId(), null, saved.getBalance(), "Account created");
+        return saved;
     }
     
     @Override

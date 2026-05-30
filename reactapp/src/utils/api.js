@@ -1,6 +1,7 @@
 import axios from "axios"
+import { getAuthHeader } from "./auth"
 
-const API_BASE_URL = "http://localhost:8080/api"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api"
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,6 +9,17 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 })
+
+api.interceptors.request.use(
+  (config) => {
+    const authHeader = getAuthHeader()
+    if (authHeader) {
+      config.headers.Authorization = authHeader
+    }
+    return config
+  },
+  (error) => Promise.reject(error),
+)
 
 // api.interceptors.request.use(
 //   (config) => {
@@ -30,6 +42,22 @@ api.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+// Auth API functions
+export const loginUser = async (username, password) => {
+  const token = btoa(`${username}:${password}`)
+  const response = await api.get("/auth/login", {
+    headers: {
+      Authorization: `Basic ${token}`,
+    },
+  })
+  return response.data
+}
+
+export const registerUser = async (userData) => {
+  const response = await api.post("/auth/register", userData)
+  return response.data
+}
 
 // Account API functions
 export const fetchAccounts = async () => {

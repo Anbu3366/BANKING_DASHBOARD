@@ -3,8 +3,8 @@ import { formatCurrency, formatDate, getAmountDisplay, getTransactionTypeDisplay
 const TransactionHistory = ({ transactions }) => {
   if (!transactions || transactions.length === 0) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
-        <p>No transactions found</p>
+      <div className="text-center py-12 text-muted-foreground bg-card/15 rounded-xl border border-dashed border-border">
+        <p className="text-sm">No transaction records found for this account.</p>
       </div>
     )
   }
@@ -13,16 +13,16 @@ const TransactionHistory = ({ transactions }) => {
   const sortedTransactions = [...transactions].sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate))
 
   return (
-    <div className="overflow-x-auto">
+    <div className="banking-table-container">
       <table className="banking-table">
         <thead>
           <tr>
-            <th>Transaction ID</th>
+            <th>Tx ID</th>
             <th>Type</th>
-            <th>Amount</th>
             <th>Description</th>
-            <th>Date</th>
-            <th>Recipient</th>
+            <th>Recipient Acc</th>
+            <th>Date & Time</th>
+            <th className="text-right">Amount</th>
           </tr>
         </thead>
         <tbody>
@@ -39,29 +39,42 @@ const TransactionHistory = ({ transactions }) => {
               transaction.recipientAccountId,
             )
 
+            const isDeposit = transaction.transactionType === "DEPOSIT"
+            const isWithdrawal = transaction.transactionType === "WITHDRAWAL"
+            const isTransfer = transaction.transactionType === "TRANSFER"
+
+            let badgeStyle = "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+            if (isDeposit) {
+              badgeStyle = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+            } else if (isWithdrawal) {
+              badgeStyle = "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+            } else if (isTransfer && transaction.recipientAccountId) {
+              badgeStyle = "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+            }
+
             return (
-              <tr key={transaction.transactionId} className="hover:bg-muted/50">
-                <td className="font-mono">{transaction.transactionId}</td>
+              <tr key={transaction.transactionId}>
+                <td className="font-mono-numbers text-xs text-muted-foreground">
+                  #{transaction.transactionId}
+                </td>
                 <td>
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${
-                      transaction.transactionType === "DEPOSIT"
-                        ? "bg-green-100 text-green-800"
-                        : transaction.transactionType === "WITHDRAWAL"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-blue-100 text-blue-800"
-                    }`}
-                  >
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide uppercase ${badgeStyle}`}>
                     {displayType}
                   </span>
                 </td>
-                <td className={`font-semibold ${amount >= 0 ? "text-green-600" : "text-red-600"}`}>
+                <td className="text-foreground/90 max-w-[200px] truncate">
+                  {transaction.description}
+                </td>
+                <td className="font-mono-numbers text-xs text-muted-foreground">
+                  {transaction.recipientAccountId ? `#${transaction.recipientAccountId}` : "—"}
+                </td>
+                <td className="text-muted-foreground text-xs">
+                  {formatDate(transaction.transactionDate)}
+                </td>
+                <td className={`text-right font-mono-numbers font-bold text-sm ${amount >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
                   {amount >= 0 ? "+" : ""}
                   {formatCurrency(amount)}
                 </td>
-                <td>{transaction.description}</td>
-                <td className="text-sm">{formatDate(transaction.transactionDate)}</td>
-                <td className="font-mono text-sm">{transaction.recipientAccountId || "-"}</td>
               </tr>
             )
           })}

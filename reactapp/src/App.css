@@ -1,44 +1,99 @@
-/* Banking Application Styles */
+/* Premium Banking Application Styles */
+
+/* Glassmorphism card */
 .banking-card {
-  @apply bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow;
+  @apply bg-card/70 backdrop-blur-md border border-border rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:border-primary/30 transition-all duration-300;
 }
 
+/* Primary premium button */
 .banking-button-primary {
-  @apply bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium hover:bg-primary/90 transition-colors;
+  @apply bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-semibold shadow-md hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
+/* Secondary premium button */
 .banking-button-secondary {
-  @apply bg-secondary text-secondary-foreground px-4 py-2 rounded-md font-medium hover:bg-secondary/90 transition-colors;
+  @apply bg-secondary text-secondary-foreground px-5 py-2.5 rounded-xl font-semibold shadow-md hover:bg-secondary/90 hover:shadow-lg hover:shadow-secondary/20 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
+/* Premium input controls */
 .banking-input {
-  @apply w-full px-3 py-2 border border-border rounded-md bg-input focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+  @apply w-full px-4 py-3 border border-border rounded-xl bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition-all duration-300 placeholder-muted-foreground/60;
 }
 
 .banking-select {
-  @apply w-full px-3 py-2 border border-border rounded-md bg-input focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+  @apply w-full px-4 py-3 border border-border rounded-xl bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition-all duration-300;
+}
+
+/* Premium stylized tables */
+.banking-table-container {
+  @apply overflow-x-auto rounded-2xl border border-border bg-card/45 backdrop-blur-sm shadow-inner;
 }
 
 .banking-table {
-  @apply w-full border-collapse border border-border rounded-lg overflow-hidden;
+  @apply w-full border-collapse text-sm text-left;
 }
 
 .banking-table th {
-  @apply bg-muted px-4 py-3 text-left font-semibold text-muted-foreground border-b border-border;
+  @apply bg-muted/60 px-5 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border;
 }
 
 .banking-table td {
-  @apply px-4 py-3 border-b border-border;
+  @apply px-5 py-4 border-b border-border text-foreground/90 font-medium;
 }
 
+.banking-table tr {
+  @apply transition-colors duration-200;
+}
+
+.banking-table tr:hover {
+  @apply bg-muted/30;
+}
+
+/* Messages and feedback states */
 .error-message {
-  @apply text-destructive text-sm mt-1;
+  @apply text-destructive text-sm font-semibold mt-1 flex items-center gap-1.5;
 }
 
 .success-message {
-  @apply text-green-600 text-sm mt-1;
+  @apply text-emerald-500 text-sm font-semibold mt-1 flex items-center gap-1.5;
 }
 
 .loading-spinner {
-  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary;
+  @apply animate-spin rounded-full h-10 w-10 border-4 border-primary border-t-transparent;
+}
+
+/* Monospaced text helper for transaction numbers and account balance */
+.font-mono-numbers {
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+}
+
+/* Debit/Credit card designs */
+.credit-card {
+  position: relative;
+  background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+  border-radius: 20px;
+  padding: 24px;
+  color: white;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.credit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.6);
+}
+
+.credit-card-checking {
+  background: linear-gradient(135deg, #0d9488 0%, #115e59 100%);
+  box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.4);
+}
+
+.credit-card-checking:hover {
+  box-shadow: 0 15px 30px -5px rgba(13, 148, 136, 0.6);
+}
+
+/* Utilities */
+.glass-panel {
+  @apply bg-slate-900/40 backdrop-blur-lg border border-slate-800/80 rounded-2xl shadow-xl;
 }

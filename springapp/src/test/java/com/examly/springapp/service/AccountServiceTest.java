@@ -19,13 +19,15 @@ public class AccountServiceTest {
     private AccountRepository accountRepository;
     private Validator validator;
     private AccountServiceImpl accountService;
+    private AuditService auditService;
 
     @BeforeEach
     public void setup() {
         accountRepository = Mockito.mock(AccountRepository.class);
+        auditService = Mockito.mock(AuditService.class);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-        accountService = new AccountServiceImpl(accountRepository, validator);
+        accountService = new AccountServiceImpl(accountRepository, validator, auditService);
     }
 
     @Test

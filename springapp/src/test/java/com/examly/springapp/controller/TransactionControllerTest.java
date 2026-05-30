@@ -20,8 +20,10 @@ import java.util.NoSuchElementException;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
 @WebMvcTest(TransactionController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class TransactionControllerTest {
     @Autowired
     private MockMvc mockMvc;

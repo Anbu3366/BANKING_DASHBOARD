@@ -19,14 +19,17 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final Validator validator;
+    private final AuditService auditService;
     
     @Autowired
     public TransactionServiceImpl(AccountRepository accountRepository, 
                                 TransactionRepository transactionRepository, 
-                                Validator validator) {
+                                Validator validator,
+                                AuditService auditService) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.validator = validator;
+        this.auditService = auditService;
     }
     
     @Override
@@ -49,7 +52,9 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setTransactionDate(LocalDateTime.now());
         
         transactionRepository.save(transaction);
-        return accountRepository.save(account);
+        Account saved = accountRepository.save(account);
+        auditService.log("DEPOSIT", accountId, null, amount, description);
+        return saved;
     }
     
     @Override
@@ -71,12 +76,14 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = new Transaction();
         transaction.setAccountId(accountId);
         transaction.setAmount(amount);
-        transaction.setTransactionType("WITHDRAW");
+        transaction.setTransactionType("WITHDRAWAL");
         transaction.setDescription(description);
         transaction.setTransactionDate(LocalDateTime.now());
         
         transactionRepository.save(transaction);
-        return accountRepository.save(account);
+        Account saved = accountRepository.save(account);
+        auditService.log("WITHDRAWAL", accountId, null, amount, description);
+        return saved;
     }
     
     @Override
@@ -107,7 +114,7 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction debitTransaction = new Transaction();
         debitTransaction.setAccountId(fromAccountId);
         debitTransaction.setAmount(amount);
-        debitTransaction.setTransactionType("TRANSFER_OUT");
+        debitTransaction.setTransactionType("TRANSFER");
         debitTransaction.setDescription(description);
         debitTransaction.setRecipientAccountId(toAccountId);
         debitTransaction.setTransactionDate(LocalDateTime.now());
@@ -116,7 +123,7 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction creditTransaction = new Transaction();
         creditTransaction.setAccountId(toAccountId);
         creditTransaction.setAmount(amount);
-        creditTransaction.setTransactionType("TRANSFER_IN");
+        creditTransaction.setTransactionType("TRANSFER");
         creditTransaction.setDescription(description);
         creditTransaction.setRecipientAccountId(fromAccountId);
         creditTransaction.setTransactionDate(LocalDateTime.now());
@@ -127,6 +134,7 @@ public class TransactionServiceImpl implements TransactionService {
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
         
+        auditService.log("TRANSFER", fromAccountId, toAccountId, amount, description);
         return fromAccount;
     }
     

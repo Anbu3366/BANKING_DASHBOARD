@@ -21,6 +21,7 @@ public class TransactionServiceTest {
     private TransactionRepository transactionRepository;
     private Validator validator;
     private TransactionServiceImpl transactionService;
+    private AuditService auditService;
 
     @BeforeEach
     public void setup() {
@@ -28,7 +29,8 @@ public class TransactionServiceTest {
         transactionRepository = Mockito.mock(TransactionRepository.class);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-        transactionService = new TransactionServiceImpl(accountRepository, transactionRepository, validator);
+        auditService = Mockito.mock(AuditService.class);
+        transactionService = new TransactionServiceImpl(accountRepository, transactionRepository, validator, auditService);
     }
 
     @Test
